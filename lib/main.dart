@@ -204,10 +204,10 @@ class InputField extends StatefulWidget {
     required this.onTextChanged, super.key,});
 
   @override
-  _InputFieldState createState() => _InputFieldState();
+  InputFieldState createState() => InputFieldState();
 }
 
-class _InputFieldState extends State<InputField> {
+class InputFieldState extends State<InputField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -225,25 +225,3 @@ class _InputFieldState extends State<InputField> {
     );
   }
 }
-// class InputField extends StatelessWidget {
-//   final TextEditingController controller;
-//   final Function(String) onTextChanged;
-//
-//   const InputField({required this.controller,
-//     required this.onTextChanged, super.key,});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 20),
-//       child: TextField(
-//         controller: controller,
-//         onChanged: onTextChanged,
-//         decoration: const InputDecoration(
-//           labelText: 'Find ',
-//           border: OutlineInputBorder(),
-//         ),
-//       ),
-//     );
-//   }
-// }
