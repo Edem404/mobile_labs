@@ -31,9 +31,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _textFromUser = '';
-  final List<String> _savedItems = [];
+  final  _savedItems = <String>[];
   final TextEditingController _textController = TextEditingController();
-
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -47,11 +46,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _resetUserActions() {
-    setState(() {
       _counter = 0;
       _textFromUser = '';
       _textController.clear();
-    });
   }
 
   void _setTextFromUser(String text) {
