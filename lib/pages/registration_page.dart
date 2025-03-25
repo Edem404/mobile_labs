@@ -11,13 +11,13 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _repeatPasswordController = TextEditingController();
+  final TextEditingController _rptPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _repeatPasswordController.dispose();
+    _rptPasswordController.dispose();
     super.dispose();
   }
 
@@ -59,7 +59,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _repeatPasswordController,
+                controller: _rptPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Repeat password',
