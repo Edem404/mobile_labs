@@ -16,7 +16,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final avatarRadius = screenWidth * 0.15;
-    final textSize = screenWidth * 0.05;
     final subtitleSize = screenWidth * 0.04;
     final spacing = screenHeight * 0.02;
 
@@ -27,7 +26,10 @@ class _ProfilePageState extends State<ProfilePage> {
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 26),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
+            icon: const Icon(
+                Icons.menu,
+                color: Colors.white,
+            ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
@@ -42,13 +44,17 @@ class _ProfilePageState extends State<ProfilePage> {
             CircleAvatar(
               radius: avatarRadius,
               backgroundColor: Colors.grey,
-              child: Icon(Icons.person, size: avatarRadius,
-                  color: Colors.white,),
+              child: Icon(
+                Icons.person,
+                size: avatarRadius,
+                color: Colors.white,),
             ),
             SizedBox(height: spacing),
-            Text(
+            const Text(
               'John Doe',
-              style: TextStyle(fontSize: textSize, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,),
             ),
             SizedBox(height: spacing * 0.5),
             Text(

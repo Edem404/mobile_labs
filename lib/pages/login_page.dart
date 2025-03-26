@@ -66,7 +66,10 @@ class _LoginPageState extends State<LoginPage> {
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
                     children: [
                       const TextSpan(
                         text: 'Still don\'t have any account? \n'
