@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    Future<void> logout() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('auth_email');
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -36,9 +44,7 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
-            onTap: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-            },
+            onTap: logout,
           ),
         ],
       ),

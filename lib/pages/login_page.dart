@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_project/custom_widget/common_widgets_lib.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,8 +14,40 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String loginEmail = '';
-  String loginPassword = '';
+  final String defaultLogin = 'root@gmail.com';
+  final String defaultPassword = 'root';
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSavedSession();
+  }
+
+  Future<void> _checkSavedSession() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? savedEmail = prefs.getString('auth_email');
+    if (savedEmail != null) {
+      Navigator.pushNamed(context, '/home');
+    }
+  }
+
+  void _login() async {
+    final String enteredEmail = _emailController.text.trim();
+    final String enteredPassword = _passwordController.text.trim();
+
+    if (enteredEmail == defaultLogin && enteredPassword == defaultPassword) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('auth_email', enteredEmail);
+      Navigator.pushNamed(context, '/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid email or password'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +87,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               CustomButton(
                 text: 'Login',
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
+                onPressed: _login,
                 color: const Color(0xFFD86FFF),
                 textColor: Colors.white,
                 textFontSize: 16,
