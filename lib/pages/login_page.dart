@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_project/custom_widget/common_widgets_lib.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,25 +20,30 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _checkSavedSession();
+    _checkSavedSession(context);
   }
 
-  Future<void> _checkSavedSession() async {
+  Future<void> _checkSavedSession(BuildContext context) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? savedEmail = prefs.getString('auth_email');
-    if (savedEmail != null) {
-      Navigator.pushNamed(context, '/home');
+    if(context.mounted) {
+      if (savedEmail != null) {
+        Navigator.pushNamed(context, '/home');
+      }
     }
   }
 
-  void _login() async {
+  void _login(BuildContext context) async {
     final String enteredEmail = _emailController.text.trim();
     final String enteredPassword = _passwordController.text.trim();
 
     if (enteredEmail == defaultLogin && enteredPassword == defaultPassword) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_email', enteredEmail);
-      Navigator.pushNamed(context, '/home');
+
+      if(context.mounted) {
+        Navigator.pushNamed(context, '/home');
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -87,7 +92,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               CustomButton(
                 text: 'Login',
-                onPressed: _login,
+                onPressed: () {
+                  _login(context);
+                },
                 color: const Color(0xFFD86FFF),
                 textColor: Colors.white,
                 textFontSize: 16,

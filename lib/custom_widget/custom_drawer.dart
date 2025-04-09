@@ -7,10 +7,12 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    Future<void> logout() async {
+    Future<void> logout(BuildContext context) async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('auth_email');
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      if(context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      }
     }
 
     return Drawer(
@@ -44,7 +46,9 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
-            onTap: logout,
+            onTap: () {
+              logout(context);
+            },
           ),
         ],
       ),
