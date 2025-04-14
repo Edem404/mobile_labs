@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/custom_widget/custom_drawer.dart';
+import 'package:mobile_project/pages/profile_page/edit_profile_dialog.dart';
+import 'package:mobile_project/pages/profile_page/profile_page_nav.dart';
+import 'package:mobile_project/services/user_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -9,6 +12,49 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String userEmail = 'johndoe@example.com';
+  String userName = 'User Name';
+  UserService? userService;
+
+  @override
+  void initState() {
+    super.initState();
+    _initUserService();
+  }
+
+  Future<void> _initUserService() async {
+    userService = await UserService.create();
+    final name = await userService?.getUserName();
+    final email = await userService?.getUserEmail();
+    setState(() {
+      userName = name ?? 'User Name';
+      userEmail = email ?? 'johndoe@example.com';
+    });
+  }
+
+  Future<void> _handleEditProfile() async {
+    if (userService == null) return;
+    final updated = await showEditProfileDialog(context, userService!);
+    if (updated) {
+      final updatedName = await userService!.getUserName();
+      final updatedEmail = await userService!.getUserEmail();
+      setState(() {
+        userName = updatedName ?? userName;
+        userEmail = updatedEmail ?? userEmail;
+      });
+    }
+  }
+
+  void _handleDeleteProfile() async {
+    await userService?.dataReset();
+
+    if(!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Delete profile successful')),
+    );
+
+    Navigator.pushNamed(context, '/registration');
+  }
 
   final List<String> rooms = [];
   @override
@@ -36,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      drawer: const CustomDrawer(),
+      drawer: CustomDrawer(),
       body: Center(
         child: Column(
           children: [
@@ -50,37 +96,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.white,),
             ),
             SizedBox(height: spacing),
-            const Text(
-              'John Doe',
-              style: TextStyle(
+            Text(
+              userName,
+              style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,),
             ),
             SizedBox(height: spacing * 0.5),
             Text(
-              'johndoe@example.com',
+              userEmail,
               style: TextStyle(fontSize: subtitleSize, color: Colors.grey),
             ),
           ],
         ),
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FloatingActionButton.extended(
-            backgroundColor: Colors.red,
-            onPressed: () {},
-            tooltip: 'Delete',
-            label: const Text(
-              'Delete profile',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 26,
-              ),
-            ),
-            icon: const Icon(Icons.delete, color: Colors.white),
-          ),
-        ],
+      floatingActionButton: ProfileBottomNav(
+        onEdit: _handleEditProfile,
+        onDelete: _handleDeleteProfile,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

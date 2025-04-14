@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile_project/services/user_service.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  CustomDrawer({super.key});
+  final Future<UserService> _userService = UserService.create();
 
   @override
   Widget build(BuildContext context) {
 
     Future<void> logout(BuildContext context) async {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.remove('auth_email');
+      final userService = await _userService;
+
+      await userService.deleteSession();
       if(context.mounted) {
         Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       }
@@ -33,7 +35,9 @@ class CustomDrawer extends StatelessWidget {
             leading: const Icon(Icons.home),
             title: const Text('Home'),
             onTap: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home', (route) => false,);
             },
           ),
           ListTile(

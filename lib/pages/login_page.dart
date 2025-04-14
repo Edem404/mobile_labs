@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/custom_widget/common_widgets_lib.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile_project/services/login_service.dart';
+import 'package:mobile_project/services/user_service.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,47 +15,27 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  final String defaultLogin = 'root@gmail.com';
-  final String defaultPassword = 'root';
+  final UserLoginService _userLoginService = UserLoginService();
+  UserService? _userService;
 
   @override
   void initState() {
     super.initState();
-    _checkSavedSession(context);
+    _initialize();
   }
 
-  Future<void> _checkSavedSession(BuildContext context) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? savedEmail = prefs.getString('auth_email');
-    if(context.mounted) {
-      if (savedEmail != null) {
-        Navigator.pushNamed(context, '/home');
-      }
+  Future<void> _initialize() async {
+    _userService = await UserService.create();
+    await _checkSavedSession();
+  }
+
+  Future<void> _checkSavedSession() async {
+    final bool? sessionState = await _userService?.getSessionState();
+
+    if (mounted && sessionState == true) {
+      Navigator.pushNamed(context, '/home');
     }
   }
-
-  void _login(BuildContext context) async {
-    final String enteredEmail = _emailController.text.trim();
-    final String enteredPassword = _passwordController.text.trim();
-
-    if (enteredEmail == defaultLogin && enteredPassword == defaultPassword) {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_email', enteredEmail);
-
-      if(context.mounted) {
-        Navigator.pushNamed(context, '/home');
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid email or password'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +74,25 @@ class _LoginPageState extends State<LoginPage> {
               ),
               CustomButton(
                 text: 'Login',
-                onPressed: () {
-                  _login(context);
+                onPressed: () async {
+                  final String enteredEmail = _emailController.text;
+                  final String enteredPassword = _passwordController.text;
+
+                  if(await _userLoginService.doLogin(
+                      enteredEmail,
+                      enteredPassword,) && context.mounted
+                  ) {
+                    await _userService?.saveUserSession();
+                    if(!context.mounted) return;
+                    Navigator.pushNamed(context, '/home');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Invalid email or password'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
                 color: const Color(0xFFD86FFF),
                 textColor: Colors.white,
