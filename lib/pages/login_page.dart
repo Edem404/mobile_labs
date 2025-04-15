@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/custom_widget/common_widgets_lib.dart';
 import 'package:mobile_project/services/login_service.dart';
 import 'package:mobile_project/services/user_service.dart';
+import 'package:provider/provider.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -15,22 +16,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final UserLoginService _userLoginService = UserLoginService();
-  UserService? _userService;
+  late UserLoginService _userLoginService;
+  late UserService _userService;
 
   @override
   void initState() {
     super.initState();
-    _initialize();
-  }
-
-  Future<void> _initialize() async {
-    _userService = await UserService.create();
-    await _checkSavedSession();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _userLoginService = context.read<UserLoginService>();
+      _userService = context.read<UserService>();
+      _checkSavedSession();
+    });
   }
 
   Future<void> _checkSavedSession() async {
-    final bool? sessionState = await _userService?.getSessionState();
+    final bool? sessionState = await _userService.getSessionState();
 
     if (mounted && sessionState == true) {
       Navigator.pushNamed(context, '/home');
@@ -75,14 +75,14 @@ class _LoginPageState extends State<LoginPage> {
               CustomButton(
                 text: 'Login',
                 onPressed: () async {
-                  final String enteredEmail = _emailController.text;
-                  final String enteredPassword = _passwordController.text;
+                  final enteredEmail = _emailController.text;
+                  final enteredPassword = _passwordController.text;
 
                   if(await _userLoginService.doLogin(
                       enteredEmail,
                       enteredPassword,) && context.mounted
                   ) {
-                    await _userService?.saveUserSession();
+                    await _userService.saveUserSession();
                     if(!context.mounted) return;
                     Navigator.pushNamed(context, '/home');
                   } else {

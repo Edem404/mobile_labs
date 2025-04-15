@@ -49,13 +49,6 @@ class UserRegistrationService {
     return isEmailValid;
   }
 
-  bool validateRptPassword(String firstPassword, String secondPassword) {
-    if(firstPassword == secondPassword) {
-      return true;
-    }
-    return false;
-  }
-
   Future<bool> isDataSaved(String userEmail) async {
     final String? emailInStorage = await _localStorage.getData(_emailKey);
 

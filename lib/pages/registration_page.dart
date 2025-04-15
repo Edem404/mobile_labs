@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/custom_widget/common_widgets_lib.dart';
 import 'package:mobile_project/services/registration_service.dart';
 import 'package:mobile_project/services/user_service.dart';
+import 'package:provider/provider.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -16,19 +17,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _rptPasswordController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  final UserRegistrationService _userRegistrationService =
-  UserRegistrationService();
-
-  UserService? _userService;
+  late UserRegistrationService _userRegistrationService;
 
   @override
   void initState() {
     super.initState();
-    _initUserService();
-  }
 
-  Future<void> _initUserService() async {
-    _userService = await UserService.create();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _userRegistrationService = context.read<UserRegistrationService>();
+    });
   }
 
   @override
@@ -42,6 +39,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final UserService userService =
+    Provider.of<UserService>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registration'),
@@ -104,9 +104,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
                   bool isRegisterSuccess = false;
 
-                  if(_userRegistrationService.validateRptPassword(
-                      password,
-                      secondPassword,)
+                  if(password == secondPassword
                   ) {
                     isRegisterSuccess =
                     await _userRegistrationService.doRegistration(
@@ -116,7 +114,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     );
                   }
                   if (isRegisterSuccess) {
-                    await _userService?.saveUserSession();
+                    await userService.saveUserSession();
 
                     if (!context.mounted) return;
                     Navigator.pushNamed(context, '/home');

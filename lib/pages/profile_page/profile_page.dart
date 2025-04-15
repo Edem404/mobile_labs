@@ -3,6 +3,7 @@ import 'package:mobile_project/custom_widget/custom_drawer.dart';
 import 'package:mobile_project/pages/profile_page/edit_profile_dialog.dart';
 import 'package:mobile_project/pages/profile_page/profile_page_nav.dart';
 import 'package:mobile_project/services/user_service.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,18 +15,24 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String userEmail = 'johndoe@example.com';
   String userName = 'User Name';
-  UserService? userService;
+  late UserService userService;
 
   @override
   void initState() {
     super.initState();
-    _initUserService();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final service = Provider.of<UserService>(context, listen: false);
+      setState(() {
+        userService = service;
+      });
+      _loadUserData(service);
+    });
   }
 
-  Future<void> _initUserService() async {
-    userService = await UserService.create();
-    final name = await userService?.getUserName();
-    final email = await userService?.getUserEmail();
+  Future<void> _loadUserData(UserService service) async {
+    final name = await service.getUserName();
+    final email = await service.getUserEmail();
     setState(() {
       userName = name ?? 'User Name';
       userEmail = email ?? 'johndoe@example.com';
@@ -33,11 +40,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _handleEditProfile() async {
-    if (userService == null) return;
-    final updated = await showEditProfileDialog(context, userService!);
+    final updated = await showEditProfileDialog(context, userService);
     if (updated) {
-      final updatedName = await userService!.getUserName();
-      final updatedEmail = await userService!.getUserEmail();
+      final updatedName = await userService.getUserName();
+      final updatedEmail = await userService.getUserEmail();
       setState(() {
         userName = updatedName ?? userName;
         userEmail = updatedEmail ?? userEmail;
@@ -46,9 +52,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _handleDeleteProfile() async {
-    await userService?.dataReset();
+    await userService.dataReset();
 
-    if(!mounted) return;
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Delete profile successful')),
     );
@@ -56,7 +62,6 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.pushNamed(context, '/registration');
   }
 
-  final List<String> rooms = [];
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -73,8 +78,8 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(
-                Icons.menu,
-                color: Colors.white,
+              Icons.menu,
+              color: Colors.white,
             ),
             onPressed: () {
               Scaffold.of(context).openDrawer();
@@ -93,14 +98,16 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Icon(
                 Icons.person,
                 size: avatarRadius,
-                color: Colors.white,),
+                color: Colors.white,
+              ),
             ),
             SizedBox(height: spacing),
             Text(
               userName,
               style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,),
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(height: spacing * 0.5),
             Text(
