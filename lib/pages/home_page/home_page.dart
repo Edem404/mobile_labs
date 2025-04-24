@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      drawer: const CustomDrawer(),
+      drawer: CustomDrawer(),
       body: const Center(
         child: Column(
           children: [
