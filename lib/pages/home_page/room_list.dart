@@ -48,15 +48,16 @@ class _RoomListState extends State<RoomList> {
       builder: (context) {
         return AlertDialog(
           title: Text(room.name),
-          content: ValueListenableBuilder<int>(
+          content: ValueListenableBuilder<double>(
             valueListenable: room.valueNotifier,
             builder: (context, value, child) {
-              return Text('Temperature: $value°C');
+              return Text('Temperature: ${value.toStringAsFixed(1)}°C');
             },
           ),
           actions: [
             TextButton(
               onPressed: () {
+                room.stopUpdatingValue();
                 Navigator.of(context).pop();
               },
               child: const Text('Exit'),

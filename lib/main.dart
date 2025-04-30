@@ -4,6 +4,7 @@ import 'package:mobile_project/pages/login_page.dart';
 import 'package:mobile_project/pages/profile_page/profile_page.dart';
 import 'package:mobile_project/pages/registration_page.dart';
 import 'package:mobile_project/services/login_service.dart';
+import 'package:mobile_project/services/network_service.dart';
 import 'package:mobile_project/services/registration_service.dart';
 import 'package:mobile_project/services/user_service.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => NetworkService()),
         Provider<UserLoginService>(
           create: (_) => UserLoginService(),
         ),

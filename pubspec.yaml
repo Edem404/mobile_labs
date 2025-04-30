@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.4.1
   provider: ^6.1.1
+  connectivity_plus: ^5.0.2
+  internet_connection_checker: ^1.0.0+1
+  mqtt_client: ^10.0.0
 
 dev_dependencies:
   flutter_test:
