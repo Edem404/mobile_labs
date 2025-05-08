@@ -49,7 +49,7 @@ class _MySettingsPageState extends State<MySettingsPage> {
 
     final qrCode = await Navigator.push(
       context,
-      MaterialPageRoute(
+      MaterialPageRoute<String>(
           builder: (context) => const QrScannerPage(),
       ),
     );
@@ -147,7 +147,7 @@ class _MySettingsPageState extends State<MySettingsPage> {
 
   void _onEditIdPressed() async {
     if (isDeviceConnected) {
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) {
           String newId = '';
