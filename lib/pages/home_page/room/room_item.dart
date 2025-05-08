@@ -1,31 +1,35 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
+import 'package:mobile_project/services/mqtt_service.dart';
 
 class Room {
   final String name;
   bool showDetails;
-  final ValueNotifier<int> valueNotifier;
-  Timer? _timer;
+  final ValueNotifier<double> valueNotifier;
+  MQTTService? _mqttService;
+  StreamSubscription<double>? _subscription;
 
   Room({
     required this.name,
     this.showDetails = false,
-    int initialValue = 0,
-  }) : valueNotifier = ValueNotifier<int>(initialValue);
+    double initialValue = 0,
+  }) : valueNotifier = ValueNotifier<double>(initialValue);
 
   void startUpdatingValue() {
     stopUpdatingValue();
-    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      valueNotifier.value = Random().nextInt(101) - 50;
+
+    _mqttService = MQTTService();
+    _subscription = _mqttService!.connectAndListen().listen((value) {
+      valueNotifier.value = value;
     });
   }
 
   void stopUpdatingValue() {
-    _timer?.cancel();
-    _timer = null;
+    _subscription?.cancel();
+    _mqttService?.disconnect();
+    _subscription = null;
+    _mqttService = null;
   }
 
-  int get value => valueNotifier.value;
+  double get value => valueNotifier.value;
 }
