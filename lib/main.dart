@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/pages/home_page/home_page.dart';
 import 'package:mobile_project/pages/login_page.dart';
+import 'package:mobile_project/pages/my_settings_page/my_settings_page.dart';
 import 'package:mobile_project/pages/profile_page/profile_page.dart';
 import 'package:mobile_project/pages/registration_page.dart';
 import 'package:mobile_project/services/login_service.dart';
@@ -37,6 +38,7 @@ void main() async {
           '/registration': (context) => const RegistrationPage(),
           '/home': (context) => const HomePage(),
           '/profile': (context) => const ProfilePage(),
+          '/my_settings': (context) => const MySettingsPage(),
         },
       ),
     ),
