@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
+
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -9,11 +12,35 @@ class MQTTService {
     8883,
   );
 
-  Stream<double> connectAndListen() async* {
-    client.logging(on: false);
-    client.secure = true; // because of port 8883
+  MQTTService() {
+    client.secure = true;
+    client.logging(on: true);
     client.keepAlivePeriod = 20;
+  }
 
+  static void _parseJson(Map<String, dynamic> message) {
+    final sendPort = message['sendPort'] as SendPort;
+    final payload = message['payload'] as String;
+
+    try {
+      final data = jsonDecode(payload);
+      final double temp = (data['temp_value'] as num).toDouble();
+      sendPort.send(temp);
+    } catch (e) {
+      sendPort.send(null);
+    }
+  }
+
+  Future<double?> _parseInIsolate(String payload) async {
+    final receivePort = ReceivePort();
+    await Isolate.spawn(_parseJson, {
+      'sendPort': receivePort.sendPort,
+      'payload': payload,
+    });
+    return await receivePort.first as double?;
+  }
+
+  Stream<double> connectAndListen() async* {
     final connMessage = MqttConnectMessage()
         .authenticateAs('mobile', 'MobileLab1')
         .startClean()
@@ -27,6 +54,11 @@ class MQTTService {
       return;
     }
 
+    if (client.connectionStatus?.state != MqttConnectionState.connected) {
+      client.disconnect();
+      return;
+    }
+
     const topic = 'temp_topic';
     client.subscribe(topic, MqttQos.atMostOnce);
 
@@ -36,9 +68,10 @@ class MQTTService {
       MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
       try {
-        final data = jsonDecode(payload);
-        final double temp = (data['temp_value'] as num).toDouble();
-        yield temp;
+        final temp = await _parseInIsolate(payload);
+        if (temp != null) {
+          yield temp;
+        }
       } catch (e) {
         client.disconnect();
         return;

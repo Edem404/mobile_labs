@@ -39,6 +39,8 @@ dependencies:
   connectivity_plus: ^5.0.2
   internet_connection_checker: ^1.0.0+1
   mqtt_client: ^10.0.0
+  usb_serial: ^0.5.1
+  mobile_scanner: ^6.0.9
 
 dev_dependencies:
   flutter_test:
