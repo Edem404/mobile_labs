@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/pages/home_page/home_page.dart';
-import 'package:mobile_project/pages/login_page.dart';
+import 'package:mobile_project/pages/home_page/home/home_page.dart';
+import 'package:mobile_project/pages/login_page/login_page.dart';
 import 'package:mobile_project/pages/my_settings_page/my_settings_page.dart';
 import 'package:mobile_project/pages/profile_page/profile_page.dart';
-import 'package:mobile_project/pages/registration_page.dart';
+import 'package:mobile_project/pages/registration_page/registration_page.dart';
 import 'package:mobile_project/services/login_service.dart';
 import 'package:mobile_project/services/network_service.dart';
 import 'package:mobile_project/services/registration_service.dart';

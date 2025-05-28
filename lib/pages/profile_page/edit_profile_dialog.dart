@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/services/user_service.dart';
+import 'package:mobile_project/pages/profile_page/profile_cubit.dart';
 
 Future<bool> showEditProfileDialog(
-    BuildContext context,
-    UserService userService,
-    ) async {
+    BuildContext context, ProfileCubit cubit,) async {
+  final nameController = TextEditingController(text: cubit.state.userName);
+  final emailController = TextEditingController(text: cubit.state.userEmail);
 
-  final nameController =
-  TextEditingController(text: await userService.getUserName());
+  if (!context.mounted) return false;
 
-  final emailController =
-  TextEditingController(text: await userService.getUserEmail());
-
-  if(!context.mounted) return false;
   final result = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -21,13 +16,11 @@ Future<bool> showEditProfileDialog(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: nameController,
-            decoration: const InputDecoration(labelText: 'Name'),
-          ),
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Name'),),
           TextField(
-            controller: emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
-          ),
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),),
         ],
       ),
       actions: [
@@ -37,9 +30,11 @@ Future<bool> showEditProfileDialog(
         ),
         TextButton(
           onPressed: () async {
-            await userService.editUserName(nameController.text);
-            await userService.editUserEmail(emailController.text);
-            if(!context.mounted) return;
+            await cubit.updateUserProfile(
+                nameController.text,
+                emailController.text,
+            );
+            if (!context.mounted) return;
             Navigator.of(context).pop(true);
           },
           child: const Text('Save'),
