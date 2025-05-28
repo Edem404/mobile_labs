@@ -7,8 +7,8 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   ProfileCubit(this.userService)
       : super(const ProfileState(
-      userName: 'User Name',
-      userEmail: 'johndoe@example.com',),
+      userName: '',
+      userEmail: '',),
   );
 
   Future<void> loadUserData() async {

@@ -21,10 +21,10 @@ class LoginPage extends StatelessWidget {
           if (state.autoLoginSuccess || state.loginSuccess) {
             Navigator.pushReplacementNamed(context, '/home');
           }
-          if (state.errorMessage != null) {
+          if (state.errorMessage != '') {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage!),
+                content: Text(state.errorMessage),
                 backgroundColor: Colors.red,
               ),
             );
@@ -46,7 +46,7 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (!context.read<LoginCubit>().networkService.isConnected)
+                    if (!state.hasConnection)
                       const Padding(
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(

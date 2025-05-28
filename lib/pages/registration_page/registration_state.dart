@@ -1,4 +1,6 @@
-class RegistrationState {
+import 'package:equatable/equatable.dart';
+
+class RegistrationState extends Equatable {
   final String name;
   final String email;
   final String password;
@@ -32,4 +34,14 @@ class RegistrationState {
       errorMessage: errorMessage,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    name,
+    email,
+    password,
+    repeatPassword,
+    isSuccess,
+    errorMessage,
+  ];
 }

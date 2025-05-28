@@ -32,6 +32,16 @@ class MySettingsCubit extends Cubit<MySettingsState> {
     }
 
     final data = jsonDecode(qrResult) as Map<String, dynamic>;
+    if (!data.containsKey('id') ||
+        !data.containsKey('login') ||
+        !data.containsKey('password')) {
+      emit(state.copyWith(
+        errorMessage: 'Invalid QR-code data format',
+        isLoading: false,
+      ),);
+      return;
+    }
+
     final parsedId = data['id'] as int?;
     final parsedLogin = data['login'] as String?;
     final parsedPassword = data['password'] as String?;

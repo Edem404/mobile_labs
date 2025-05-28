@@ -31,20 +31,24 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void clearError() {
-    emit(state.copyWith());
+    emit(state.copyWith(errorMessage: ''));
   }
 
   Future<void> login() async {
     emit(state.copyWith(isLoading: true));
 
-    if (!networkService.isConnected) {
+    final hasInternet = networkService.isConnected;
+    if (!hasInternet) {
       emit(state.copyWith(
         errorMessage: 'No internet connection',
         isLoading: false,
+        hasConnection: false,
       ),
       );
       return;
     }
+
+    emit(state.copyWith(hasConnection: true));
 
     final success = await loginService.doLogin(state.email, state.password);
     if (success) {
